@@ -44,6 +44,10 @@ namespace WeatherArchive.Data.Configurations
                     l => l.HasOne(typeof(WeatherPhenomenon)).WithMany().HasForeignKey("WeatherPhenomenon"),
                     r => r.HasOne(typeof(WeatherReport)).WithMany().HasForeignKey("WeatherReport"));
 
+            builder
+                .HasIndex(x => x.Timestamp)
+                .IsUnique();
+
             builder.HasKey(x => x.Id);
         }
     }
