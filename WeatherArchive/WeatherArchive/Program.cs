@@ -1,7 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using WeatherArchive.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<WeatherArchiveContext>(options => 
+    options.UseNpgsql(builder.Configuration.GetConnectionString("WeatherArchiveDb")));
 
 var app = builder.Build();
 
