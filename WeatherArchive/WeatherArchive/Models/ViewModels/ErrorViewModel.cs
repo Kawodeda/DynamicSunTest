@@ -1,4 +1,4 @@
-namespace WeatherArchive.Models
+namespace WeatherArchive.Models.ViewModels
 {
     public class ErrorViewModel
     {
