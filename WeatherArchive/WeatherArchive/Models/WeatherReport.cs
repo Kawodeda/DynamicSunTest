@@ -10,9 +10,9 @@
             float dewPoint,
             float pressure,
             float windSpeed,
-            float cloudiness,
+            float? cloudiness,
             float cloudBase,
-            float horizontalVisibility)
+            float? horizontalVisibility)
         {
             Id = id;
             Timestamp = timestamp;
@@ -40,11 +40,11 @@
 
         public float WindSpeed { get; }
 
-        public float Cloudiness { get; }
+        public float? Cloudiness { get; }
 
         public float CloudBase { get; }
 
-        public float HorizontalVisibility { get; }
+        public float? HorizontalVisibility { get; }
 
         public List<WindDirection> WindDirections { get; } = new();
 

@@ -13,7 +13,8 @@ namespace WeatherArchive.Data.Configurations
             builder.Property(x => x.Id)
                 .IsRequired();
             builder.Property(x => x.Timestamp)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("timestamp");
             builder.Property(x => x.Temperature)
                 .IsRequired();
             builder.Property(x => x.Humidity)
@@ -24,12 +25,10 @@ namespace WeatherArchive.Data.Configurations
                 .IsRequired();
             builder.Property(x => x.WindSpeed)
                 .IsRequired();
-            builder.Property(x => x.Cloudiness)
-                .IsRequired();
+            builder.Property(x => x.Cloudiness);
             builder.Property(x => x.CloudBase)
                 .IsRequired();
-            builder.Property(x => x.HorizontalVisibility)
-                .IsRequired();
+            builder.Property(x => x.HorizontalVisibility);
 
             builder
                 .HasMany(x => x.WindDirections)
