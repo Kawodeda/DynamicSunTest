@@ -1,0 +1,36 @@
+﻿@model FileUploadResultViewModel
+
+@{
+    ViewData["Title"] = "Upload weather data";
+}
+
+<h1 class="text-center">Uploading results</h1>
+
+<div class="container text-center">
+    @if (Model.SavedReports > 0)
+    {
+        <div class="row">
+            <span style="color: green">Successfully added: @Model.SavedReports records</span>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <span>No records were added...</span>
+        </div>
+    }
+    @if (Model.Conflicts > 0)
+    {
+        <div class="row">
+            <span style="color: orange">Conflicts occured: @Model.Conflicts</span>
+        </div>
+    }
+    @if (Model.ParsingError)
+    {
+        <div class="row">
+            <span style="color: red">Parsing error occured!</span>
+        </div>
+    }
+
+    <a asp-action="Index" class="btn btn-primary" style="margin-top: 10px">Home</a>
+</div>

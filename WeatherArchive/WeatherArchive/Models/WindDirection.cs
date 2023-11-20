@@ -2,7 +2,12 @@
 {
     public class WindDirection
     {
-        public WindDirection(int id, string title)
+        public WindDirection(string title) : this(0, title)
+        {
+
+        }
+
+        private WindDirection(int id, string title)
         {
             Id = id;
             Title = title;

@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using WeatherArchive.Data;
+using WeatherArchive.Data.Parsing;
+using WeatherArchive.Data.Repositories;
+using WeatherArchive.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +12,8 @@ builder.Services.AddDbContext<WeatherArchiveContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("WeatherArchiveDb")));
 
 builder.Services.AddScoped<IWeatherReportRepository, WeatherReportRepository>();
+builder.Services.AddScoped<IWeatherReportExcelParser, WeatherReportExcelParser>();
+builder.Services.AddScoped<IWeatherArchiveUploadService, WeatherArchiveUploadService>();
 
 var app = builder.Build();
 

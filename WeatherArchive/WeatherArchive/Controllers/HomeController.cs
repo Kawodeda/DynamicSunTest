@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using WeatherArchive.Models;
+using WeatherArchive.Models.ViewModels;
+using WeatherArchive.Services;
 
 namespace WeatherArchive.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IWeatherArchiveUploadService _weatherArchiveUploadService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IWeatherArchiveUploadService weatherArchiveUploadService)
         {
-            _logger = logger;
+            _weatherArchiveUploadService = weatherArchiveUploadService;
         }
 
         public IActionResult Index()
@@ -18,15 +18,36 @@ namespace WeatherArchive.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Upload()
         {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public async Task<IActionResult> Upload(List<IFormFile> files)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var result = WeatherArchiveUploadResult.Empty;
+            foreach (IFormFile file in files)
+            {
+                using (Stream stream = file.OpenReadStream())
+                {
+                    result += await _weatherArchiveUploadService.UploadExcel(stream);
+                }
+            }
+
+            return View(
+                "UploadResult", 
+                new FileUploadResultViewModel 
+                { 
+                    SavedReports = result.SavedReports, 
+                    Conflicts = result.Conflicts,
+                    ParsingError = result.ParsingError
+                });
         }
     }
 }

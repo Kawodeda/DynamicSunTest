@@ -26,8 +26,7 @@ namespace WeatherArchive.Data.Configurations
             builder.Property(x => x.WindSpeed)
                 .IsRequired();
             builder.Property(x => x.Cloudiness);
-            builder.Property(x => x.CloudBase)
-                .IsRequired();
+            builder.Property(x => x.CloudBase);
             builder.Property(x => x.HorizontalVisibility);
 
             builder

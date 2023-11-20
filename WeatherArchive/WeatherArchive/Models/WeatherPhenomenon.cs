@@ -2,7 +2,12 @@
 {
     public class WeatherPhenomenon
     {
-        public WeatherPhenomenon(int id, string title)
+        public WeatherPhenomenon(string title) : this(0, title)
+        {
+
+        }
+
+        private WeatherPhenomenon(int id, string title)
         {
             Id = id;
             Title = title;

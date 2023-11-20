@@ -14,7 +14,7 @@ namespace WeatherArchive.Data.Configurations
                 .IsRequired();
             builder.Property(x => x.Title)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(200);
 
             builder.HasKey(x => x.Id);
         }

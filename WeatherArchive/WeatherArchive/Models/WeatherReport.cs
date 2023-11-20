@@ -3,18 +3,19 @@
     public class WeatherReport
     {
         public WeatherReport(
-            int id,
             DateTime timestamp,
             float temperature,
             float humidity,
             float dewPoint,
             float pressure,
             float windSpeed,
-            float? cloudiness,
-            float cloudBase,
-            float? horizontalVisibility)
+            float? cloudiness = null,
+            float? cloudBase = null,
+            float? horizontalVisibility = null,
+            IEnumerable<WindDirection>? windDirections = null,
+            IEnumerable<WeatherPhenomenon>? weatherPhenomena = null)
         {
-            Id = id;
+            Id = 0;
             Timestamp = timestamp;
             Temperature = temperature;
             Humidity = humidity;
@@ -24,6 +25,40 @@
             Cloudiness = cloudiness;
             CloudBase = cloudBase;
             HorizontalVisibility = horizontalVisibility;
+            
+            if (windDirections != null)
+            {
+                WindDirections.AddRange(windDirections);
+            }
+            if (weatherPhenomena != null)
+            {
+                WeatherPhenomena.AddRange(weatherPhenomena);
+            }
+        }
+
+        private WeatherReport(
+            int id,
+            DateTime timestamp,
+            float temperature,
+            float humidity,
+            float dewPoint,
+            float pressure,
+            float windSpeed,
+            float? cloudiness = null,
+            float? cloudBase = null,
+            float? horizontalVisibility = null) 
+            : this(
+                  timestamp, 
+                  temperature, 
+                  humidity,
+                  dewPoint,
+                  pressure,
+                  windSpeed,
+                  cloudiness,
+                  cloudBase,
+                  horizontalVisibility)
+        {
+            Id = id;
         }
 
         public int Id { get; }
@@ -42,7 +77,7 @@
 
         public float? Cloudiness { get; }
 
-        public float CloudBase { get; }
+        public float? CloudBase { get; }
 
         public float? HorizontalVisibility { get; }
 

@@ -1,0 +1,14 @@
+﻿@model FileUploadViewModel
+
+@{
+    ViewData["Title"] = "Upload weather data";
+}
+
+<form asp-action="Upload" enctype="multipart/form-data" method="post">
+    <h1 class="text-center" style="margin-top: 10px">Select one or multiple Excel files containing weather data</h1>
+    <div style="display: flex; flex-direction: column; align-items: center">
+        <input style="margin-top: 10px" asp-for="Files" type="file" accept=".xls, .xlsx, application/vnd.ms-excel" multiple>
+        <input style="margin-top: 15px; width: 16em" type="submit" value="Upload" class="btn btn-primary" />
+        <span style="margin-top: 5px" asp-validation-for="Files" class="text-danger"></span>
+    </div>
+</form>
