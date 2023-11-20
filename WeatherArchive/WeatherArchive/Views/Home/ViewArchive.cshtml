@@ -1,0 +1,132 @@
+﻿@model ViewArchiveViewModel
+
+@{
+    ViewData["Title"] = "Weather archive";
+}
+
+<h1 class="text-center">Weather archive</h1>
+
+<div class="row">
+    <a asp-action="Index">Home</a>
+</div>
+@if (Model.PreviousEnabled)
+{
+    <a asp-action="ViewArchive" asp-route-page="@(Model.PageIndex - 1)" asp-route-month="@(Model.Month)" asp-route-year="@Model.Year">Previous</a>
+}
+<span style="margin: 0 5px">@(Model.PageIndex + 1)</span>
+@if (Model.NextEnabled)
+{
+    <a asp-action="ViewArchive" asp-route-page="@(Model.PageIndex + 1)" asp-route-month="@(Model.Month)" asp-route-year="@Model.Year">Next</a>
+}
+
+<div style="display: flex; justify-content: center">
+    <form asp-controller="Home" asp-action="ViewArchive" method="get" style="margin-top: 10px; width: 16em">
+        <div class="row">
+            <label asp-for="Month">Month</label>
+            <select asp-for="Month" asp-items="Model.Months" class="form-select"></select>
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <label asp-for="Year">Year</label>
+            <input type="number" asp-for="Year" class="form-control">
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <input type="submit" value="Apply" class="btn btn-primary">
+        </div>
+    </form>
+</div>
+
+<table class="table table-striped" style="margin-top: 20px">
+    <thead>
+        <tr>
+            <th>
+                Date
+            </th>
+            <th>
+                Time
+            </th>
+            <th>
+                Temperature
+            </th>
+            <th>
+                Humidity
+            </th>
+            <th>
+                Dew point
+            </th>
+            <th>
+                Pressure
+            </th>
+            <th>
+                Wind direction
+            </th>
+            <th>
+                Wind speed
+            </th>
+            <th>
+                Cloudiness
+            </th>
+            <th>
+                Cloud base
+            </th>
+            <th>
+                Horizontal visibility
+            </th>
+            <th>
+                Weather phenomena
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var report in Model.WeatherReports)
+        {
+            <tr>
+                <td>
+                    @report.Timestamp.Date.ToShortDateString()
+                </td>
+                <td>
+                    @($"{report.Timestamp.TimeOfDay:hh}:{report.Timestamp.TimeOfDay:mm}")
+                </td>
+                <td>
+                    @report.Temperature &degC
+                </td>
+                <td>
+                    @($"{report.Humidity}%")
+                </td>
+                <td>
+                    @report.DewPoint &degC
+                </td>
+                <td>
+                    @report.Pressure mm
+                </td>
+                <td>
+                    @string.Join(", ", report.WindDirections.Select(x => x.Title))
+                </td>
+                <td>
+                    @report.WindSpeed m/s
+                </td>
+                <td>
+                    @(report.Cloudiness != null ? $"{report.Cloudiness}%" : "-")
+                </td>
+                <td>
+                    @(report.CloudBase != null ? $"{report.CloudBase} m" : "-")
+                </td>
+                <td>
+                    @(report.HorizontalVisibility != null ? $"{report.HorizontalVisibility} km" : "-")
+                </td>
+                <td>
+                    @string.Join(", ", report.WeatherPhenomena.Select(x => x.Title))
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.PreviousEnabled)
+{
+    <a asp-action="ViewArchive" asp-route-page="@(Model.PageIndex - 1)" asp-route-month="@(Model.Month)" asp-route-year="@Model.Year">Previous</a>
+}
+<span style="margin: 0 5px">@(Model.PageIndex + 1)</span>
+@if (Model.NextEnabled)
+{
+    <a asp-action="ViewArchive" asp-route-page="@(Model.PageIndex + 1)" asp-route-month="@(Model.Month)" asp-route-year="@Model.Year">Next</a>
+}

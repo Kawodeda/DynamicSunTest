@@ -6,7 +6,7 @@ namespace WeatherArchive.Data.Parsing
 {
     public class WeatherReportExcelParser : IWeatherReportExcelParser
     {
-        private const int StartRow = 4;
+        private const int _startRow = 4;
 
         public IEnumerable<WeatherReport> Parse(Stream data)
         {
@@ -18,7 +18,7 @@ namespace WeatherArchive.Data.Parsing
 
         private IEnumerable<WeatherReport> ParseSheet(ISheet sheet)
         {
-            return GetRows(sheet, StartRow)
+            return GetRows(sheet, _startRow)
                 .Select(ParseRow);
         }
 
