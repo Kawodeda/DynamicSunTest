@@ -23,10 +23,10 @@ namespace WeatherArchive.Data.Repositories
 
         public async Task<WeatherReportsSavingResult> SaveIfNotExists(IEnumerable<WeatherReport> weatherReports)
         {
-            return await WithRetryAsync(() => SaveIfNotExistsImpl(weatherReports), 3);
+            return await WithRetryAsync(() => SaveIfNotExistsImpl(weatherReports), 3, "Unexpected error occured while saving data");
         }
 
-        private async Task<T> WithRetryAsync<T>(Func<Task<T>> taskFactory, int retryCount)
+        private async Task<T> WithRetryAsync<T>(Func<Task<T>> taskFactory, int retryCount, string faliMessage = "")
         {
             for (int i = 0; i < retryCount; i++)
             {
@@ -40,7 +40,7 @@ namespace WeatherArchive.Data.Repositories
                 }
             }
 
-            throw new Exception();
+            throw new Exception(faliMessage);
         }
 
         private async Task<WeatherReportsSavingResult> SaveIfNotExistsImpl(IEnumerable<WeatherReport> weatherReports)
@@ -65,6 +65,8 @@ namespace WeatherArchive.Data.Repositories
 
         private async Task ReplaceWindDirectionsWithExistingEntities(IEnumerable<WeatherReport> weatherReports)
         {
+            // Предполагается, что в таблице WindDirection будет не много данных,
+            // поэтому можем загрузить все в память
             List<WindDirection> existingWindDirections = await _context.WindDirections.ToListAsync();
             foreach (WeatherReport weatherReport in weatherReports)
             {
@@ -89,6 +91,8 @@ namespace WeatherArchive.Data.Repositories
 
         private async Task ReplaceWeatherPhenomenaWithExistingEntities(IEnumerable<WeatherReport> weatherReports)
         {
+            // Предполагается, что в таблице WeatherPhenomenon будет не много данных,
+            // поэтому можем загрузить все в память
             List<WeatherPhenomenon> existingWeatherPhenomena = await _context.WeatherPhenomena.ToListAsync();
             foreach (WeatherReport weatherReport in weatherReports)
             {

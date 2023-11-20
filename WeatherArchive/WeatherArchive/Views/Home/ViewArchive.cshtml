@@ -9,6 +9,23 @@
 <div class="row">
     <a asp-action="Index">Home</a>
 </div>
+
+<div style="display: flex; justify-content: center">
+    <form asp-controller="Home" asp-action="ViewArchive" method="get" style="margin-top: 10px; width: 16em">
+        <div class="row">
+            <label asp-for="Month">Month</label>
+            <select asp-for="Month" asp-items="Model.Months" class="form-select"></select>
+        </div>
+        <div class="row" style="margin-top: 10px;">
+            <label asp-for="Year">Year</label>
+            <input type="number" asp-for="Year" class="form-control">
+        </div>
+        <div class="row" style="margin-top: 10px">
+            <input type="submit" value="Apply" class="btn btn-primary">
+        </div>
+    </form>
+</div>
+
 @if (Model.PreviousEnabled)
 {
     <a asp-action="ViewArchive" asp-route-page="@(Model.PageIndex - 1)" asp-route-month="@(Model.Month)" asp-route-year="@Model.Year">Previous</a>
@@ -18,22 +35,6 @@
 {
     <a asp-action="ViewArchive" asp-route-page="@(Model.PageIndex + 1)" asp-route-month="@(Model.Month)" asp-route-year="@Model.Year">Next</a>
 }
-
-<div style="display: flex; justify-content: center">
-    <form asp-controller="Home" asp-action="ViewArchive" method="get" style="margin-top: 10px; width: 16em">
-        <div class="row">
-            <label asp-for="Month">Month</label>
-            <select asp-for="Month" asp-items="Model.Months" class="form-select"></select>
-        </div>
-        <div class="row" style="margin-top: 10px">
-            <label asp-for="Year">Year</label>
-            <input type="number" asp-for="Year" class="form-control">
-        </div>
-        <div class="row" style="margin-top: 10px">
-            <input type="submit" value="Apply" class="btn btn-primary">
-        </div>
-    </form>
-</div>
 
 <table class="table table-striped" style="margin-top: 20px">
     <thead>
@@ -120,6 +121,13 @@
         }
     </tbody>
 </table>
+
+@if (Model.WeatherReports.Count == 0)
+{
+    <div class="text-center">
+        <span>No data was found...</span>
+    </div>
+}
 
 @if (Model.PreviousEnabled)
 {
