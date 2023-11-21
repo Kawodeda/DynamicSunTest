@@ -8,6 +8,7 @@ namespace WeatherArchive.Data.Repositories
     public class WeatherReportRepository : IWeatherReportRepository
     {
         private readonly WeatherArchiveContext _context;
+        private static readonly SemaphoreSlim _dbAccessSemaphore = new(1, 1);
 
         public WeatherReportRepository(WeatherArchiveContext context)
         {
@@ -23,44 +24,34 @@ namespace WeatherArchive.Data.Repositories
 
         public async Task<WeatherReportsSavingResult> SaveIfNotExists(IEnumerable<WeatherReport> weatherReports)
         {
-            return await WithRetryAsync(() => SaveIfNotExistsImpl(weatherReports), 3, "Unexpected error occured while saving data");
-        }
-
-        private async Task<T> WithRetryAsync<T>(Func<Task<T>> taskFactory, int retryCount, string faliMessage = "")
-        {
-            for (int i = 0; i < retryCount; i++)
+            try
             {
-                try
-                {
-                    return await taskFactory();
-                }
-                catch
-                {
+                await _dbAccessSemaphore.WaitAsync();
+                using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
-                }
+                List<WeatherReport> weatherReportsToSave = weatherReports
+                        .Distinct(new WeatherReportEqualityComparer())
+                        .Where(report => !_context.WeatherReports.Any(r => r.Timestamp == report.Timestamp))
+                        .ToList();
+                int conflictsCount = weatherReports.Count() - weatherReportsToSave.Count();
+
+                await ReplaceWindDirectionsWithExistingEntities(weatherReportsToSave);
+                await ReplaceWeatherPhenomenaWithExistingEntities(weatherReportsToSave);
+
+                await _context.WeatherReports.AddRangeAsync(weatherReportsToSave);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return new WeatherReportsSavingResult(weatherReportsToSave.Count, conflictsCount);
             }
-
-            throw new Exception(faliMessage);
-        }
-
-        private async Task<WeatherReportsSavingResult> SaveIfNotExistsImpl(IEnumerable<WeatherReport> weatherReports)
-        {
-            using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
-            
-            List<WeatherReport> weatherReportsToSave = weatherReports
-                    .Distinct(new WeatherReportEqualityComparer())
-                    .Where(report => !_context.WeatherReports.Any(r => r.Timestamp == report.Timestamp))
-                    .ToList();
-            int conflictsCount = weatherReports.Count() - weatherReportsToSave.Count();
-
-            await ReplaceWindDirectionsWithExistingEntities(weatherReportsToSave);
-            await ReplaceWeatherPhenomenaWithExistingEntities(weatherReportsToSave);
-
-            await _context.WeatherReports.AddRangeAsync(weatherReportsToSave);
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return new WeatherReportsSavingResult(weatherReportsToSave.Count, conflictsCount);
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error occured while saving weather reports", ex);
+            }
+            finally
+            {
+                _dbAccessSemaphore.Release();
+            }
         }
 
         private async Task ReplaceWindDirectionsWithExistingEntities(IEnumerable<WeatherReport> weatherReports)
