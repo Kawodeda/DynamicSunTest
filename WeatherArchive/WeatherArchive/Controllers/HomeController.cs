@@ -36,6 +36,7 @@ namespace WeatherArchive.Controllers
             List<WeatherReport> reports = _weatherReportRepository.List()
                 .Where(report => month == null || report.Timestamp.Month == month)
                 .Where(report => year == null || report.Timestamp.Year == year)
+                .OrderBy(report => report.Timestamp)
                 .Skip(page * pageSize)
                 .Take(pageSize)
                 .ToList();

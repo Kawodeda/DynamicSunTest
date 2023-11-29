@@ -24,11 +24,9 @@ namespace WeatherArchive.Data.Repositories
 
         public async Task<WeatherReportsSavingResult> SaveIfNotExists(IEnumerable<WeatherReport> weatherReports)
         {
+            await _dbAccessSemaphore.WaitAsync();
             try
             {
-                await _dbAccessSemaphore.WaitAsync();
-                using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
-
                 List<WeatherReport> weatherReportsToSave = weatherReports
                         .Distinct(new WeatherReportEqualityComparer())
                         .Where(report => !_context.WeatherReports.Any(r => r.Timestamp == report.Timestamp))
@@ -40,7 +38,6 @@ namespace WeatherArchive.Data.Repositories
 
                 await _context.WeatherReports.AddRangeAsync(weatherReportsToSave);
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
 
                 return new WeatherReportsSavingResult(weatherReportsToSave.Count, conflictsCount);
             }
